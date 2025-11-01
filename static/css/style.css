@@ -1,0 +1,182 @@
+/* Global layout & backgrounds */
+:root{
+  --navy: #03254c;
+  --muted-white: rgba(255,255,255,0.92);
+  --card-bg: rgba(255, 255, 255, 0.993);
+}
+
+/* Generic body using a dynamic class set in body tag (set in templates) */
+body {
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  margin:0;
+  color: #060000;
+  min-height:100vh;
+}
+
+/* Backgrounds are set inside each template via body classes */
+.bg-login {
+  background-image: url('../img/bg_login.jpg');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+.bg-home {
+  background-image: url('../img/bg_login.jpg');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+.bg-main {
+  background-image: url('../img/bg_login.jpg');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+/* Dark overlay to dim the background for all pages */
+/*.bg-login::after, .bg-home::after, .bg-main::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(3,37,76,0.72), rgba(3,37,76,0.72));
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Header */
+.site-header {
+  position: relative;
+  z-index: 2;
+  padding: 28px 0 8px 0;
+  text-align: center;
+}
+.site-title {
+  font-size: 42px;
+  font-weight: 700;
+  color: #002060;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+/* Nav area */
+.navbar-container {
+  position: relative;
+  z-index: 2;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap: 28px;
+  margin-top: 12px;
+  margin-bottom: 24px;
+}
+.navbar-container a {
+  color: rgba(2, 2, 2, 0.9);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+.navbar-container a:hover {
+  background: rgba(255,255,255,0.06);
+  color: #100723;
+}
+
+/* Logout right corner */
+.top-right {
+  position: absolute;
+  top: 20px;
+  right: 28px;
+  z-index: 3;
+}
+
+/* Cards */
+.card {
+  background: var(--card-bg);
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 8px 26px rgba(3,37,76,0.45);
+  border-radius: 12px;
+  color: #1a0c39;
+}
+
+/* Forms and inner content */
+.container-main {
+  z-index:2;
+  position: relative;
+  padding-top: 18px;
+  padding-bottom: 40px;
+}
+
+/* Booking form styling */
+.form-card {
+  padding: 28px;
+  max-width: 900px;
+  margin: 20px auto;
+}
+
+/* Big primary button */
+.btn-primary {
+  background: linear-gradient(180deg, #0b66ff, #0060d6);
+  border: none;
+  box-shadow: 0 8px 20px rgba(11,102,255,0.18);
+}
+
+/* Home cards */
+.home-grid {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+  gap:22px;
+  max-width:1100px;
+  margin: 28px auto;
+}
+.home-card {
+  padding: 28px;
+  height:170px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  border-radius:12px;
+  transition: transform .18s ease;
+}
+.home-card:hover { transform: translateY(-6px); box-shadow: 0 12px 30px rgba(0,0,0,0.25); }
+
+/* calendar */
+.month {
+  background: rgba(255,255,255,0.03);
+  padding: 12px;
+  border-radius: 10px;
+}
+.month h5 { margin:0 0 6px 0; font-weight:600; font-size:16px; color:#fff; }
+
+/* date squares */
+.weekdays, .weekrow {
+  display:flex;
+}
+.day, .weekday {
+  width: 34px;
+  height: 34px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:2px;
+  border-radius:6px;
+  font-size:13px;
+}
+.weekday { color: rgba(6, 6, 6, 0.65); font-weight:600; }
+.day.out { color: rgba(9, 9, 9, 0.22); }
+.day.in { color: rgba(255,255,255,0.95); background: transparent; cursor:pointer; }
+.day.booked { background: #d9534f; color:#fff; box-shadow: 0 6px 14px rgba(217,83,79,0.18); }
+.day:hover { transform: translateY(-3px); }
+
+/* table / dashboard tweaks */
+.table-dark thead th { background: rgba(255,255,255,0.06); color:#fff; }
+.table-dark td, .table-dark th { vertical-align: middle; }
+
+/* modal style tweak */
+.modal-content { background: rgba(3,37,76,0.96); color:#fff; }
+
+/* small screens */
+@media(max-width:767px){
+  .site-title { font-size:28px; }
+  .day, .weekday { width:28px; height:28px; font-size:12px; }
+}

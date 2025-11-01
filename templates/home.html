@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block body_class %}bg-home{% endblock %}
+{% block content %}
+<div class="text-center text-black">
+  <p class="lead" style="opacity:0.9;">Welcome, {{ user }} — choose an action</p>
+</div>
+
+<div class="home-grid">
+ 
+
+  <a class="card home-card" href="{{ url_for('booking_new') }}" style="text-decoration:none;">
+    <div>
+      <h4>Book Auditorium</h4>
+      <p class="small">Create a new booking</p>
+    </div>
+  </a>
+
+  <a class="card home-card" href="{{ url_for('bookings') }}" style="text-decoration:none;">
+    <div>
+      <h4>Dashboard</h4>
+      <p class="small">Overview & exports</p>
+    </div>
+  </a>
+
+  <a class="card home-card" href="{{ url_for('calendar') }}" style="text-decoration:none;">
+    <div>
+      <h4>Calendar</h4>
+      <p class="small">Year view & quick actions</p>
+    </div>
+  </a>
+{% if user == admin_username %}
+   <a class="card home-card" href="{{ url_for('audit') }}" style="text-decoration:none;">
+    <div>
+      <h4>Audit Details</h4>
+      <p class="small">View all changes</p>
+    </div>
+  </a>
+  {% endif %}
+</div>
+{% endblock %}

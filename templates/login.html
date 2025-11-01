@@ -1,0 +1,26 @@
+{% set hide_nav = true %}
+{% extends "base.html" %}
+{% block body_class %}bg-login{% endblock %}
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height:60vh;">
+  <div class="col-md-5">
+    <div class="card form-card">
+      <h3 class="mb-3 text-dark">Sign in</h3>
+      <form method="post">
+        <div class="mb-3">
+          <label class="form-label text-muted">Username</label>
+          <input name="username" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label text-muted">Password</label>
+          <input type="password" name="password" class="form-control" required>
+        </div>
+        <div class="d-grid">
+          <button class="btn btn-primary">Sign in</button>
+        </div>
+      </form>
+      <p class="small text-muted mt-3">Use <strong>{{ admin_username or 'admin' }}</strong> / <strong>admin123</strong> (change later)</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

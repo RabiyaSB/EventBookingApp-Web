@@ -1,0 +1,102 @@
+{% set hide_nav = true %}
+{% extends "base.html" %}
+{% block body_class %}bg-main{% endblock %}
+{% block content %}
+
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h3></h3>
+  <div>
+    <a class="btn btn-sm btn-light" href="{{ url_for('home') }}">HOME</a>
+    <a class="btn btn-sm btn-light" href="{{ url_for('calendar') }}">CALENDAR</a>
+    <a class="btn btn-sm btn-light" href="{{ url_for('bookings') }}">DASHBOARD</a>
+</div>
+</div>
+<div class="card form-card">
+  <h3 class="mb-3">Please Enter Details</h3>
+  <form method="post">
+  <div class="mb-3">
+    <label class="form-label">Name</label>
+    <input name="name" class="form-control" value="{{ booking.name if edit else '' }}" required>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <label class="form-label">Phone Number</label>
+      <input type="text" name="phone" class="form-control"
+             pattern="[0-9]{10}" placeholder="Enter 10-digit number"
+             value="{{ booking.phone if edit else '' }}" required>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Email</label>
+      <input type="email" name="email" class="form-control"
+             value="{{ booking.email if edit else '' }}" required>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-4">
+      <label class="form-label">Total Amount (₹)</label>
+      <input type="number" step="0.01" name="total_amount" id="total_amount"
+             class="form-control" value="{{ booking.total_amount if edit else '' }}" required>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Advance Given (₹)</label>
+      <input type="number" step="0.01" name="advance" id="advance"
+             class="form-control" value="{{ booking.advance if edit else '' }}" required oninput="calculateBalance()">
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Balance (₹)</label>
+      <input type="number" step="0.01" name="balance" id="balance"
+             class="form-control" value="{{ booking.balance if edit else '' }}" readonly>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Details</label>
+    <textarea name="details" class="form-control" rows="3">{{ booking.details if edit else '' }}</textarea>
+  </div>
+
+  <div class="row">
+    <div class="col-md-3 mb-3">
+      <label class="form-label">From Date</label>
+      <input type="date" name="from_date" class="form-control"
+             value="{{ booking.from_date if edit else today }}" required>
+    </div>
+    <div class="col-md-3 mb-3">
+      <label class="form-label">From Time</label>
+      <select name="from_time" class="form-select" required>
+        {% for t in time_slots %}
+          <option value="{{ t }}" {% if edit and booking.from_time == t %}selected{% endif %}>{{ t }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-3 mb-3">
+      <label class="form-label">To Date</label>
+      <input type="date" name="to_date" class="form-control"
+             value="{{ booking.to_date if edit else today }}" required>
+    </div>
+    <div class="col-md-3 mb-3">
+      <label class="form-label">To Time</label>
+      <select name="to_time" class="form-select" required>
+        {% for t in time_slots %}
+          <option value="{{ t }}" {% if edit and booking.to_time == t %}selected{% endif %}>{{ t }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+  <div class="d-grid mt-3">
+    <button class="btn btn-primary">{{ 'Update Booking' if edit else 'Book Now' }}</button>
+  </div>
+</form>
+
+<script>
+function calculateBalance() {
+  const total = parseFloat(document.getElementById('total_amount').value) || 0;
+  const advance = parseFloat(document.getElementById('advance').value) || 0;
+  const balance = total - advance;
+  document.getElementById('balance').value = balance.toFixed(2);
+}
+</script>
+{% endblock %}
