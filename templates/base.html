@@ -3,7 +3,30 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{{ title or "K.A.V AUDITORIUM" }}</title>
+  <div class="top-right">
+      {% if session.get('user') %}
+        <span class="me-2 text-white small">Signed in as {{ session.get('user') }}</span>
+        <a class="btn btn-sm btn-outline-light" href="{{ url_for('logout') }}">Logout</a>
+      {% endif %}
+  </div>
+  <div class="text-center mt-3 mb-2">
+    <img 
+      src="{{ url_for('static', filename='img/logo.png') }}" 
+      alt="K.A.V Auditorium Logo"
+      style="
+        height: 250px; 
+        width: 250px; 
+        border-radius: 70%; 
+        object-fit: contain; 
+        display: block; 
+        margin: 0 auto; 
+        box-shadow: 5 2px 8px rgba(0,0,0,0.25);
+      ">
+  </div>
+  <header class="site-header">
+    
+
+  </header>
 
   <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -12,31 +35,7 @@
 </head>
 <body class="{% block body_class %}bg-main{% endblock %}">
 
-  <header class="site-header">
-    <div class="top-right">
-      {% if session.get('user') %}
-        <span class="me-2 text-white small">Signed in as {{ session.get('user') }}</span>
-        <a class="btn btn-sm btn-outline-light" href="{{ url_for('logout') }}">Logout</a>
-      {% endif %}
-    </div>
-
-    <h1 class="site-title">K.A.V AUDITORIUM</h1>
-
-    {% if not hide_nav %}
-    <div class="navbar-container">
-      {% if not hide_book_nav %}
-        <!--<a href="{{ url_for('booking_new') }}">Book</a>
-      {% endif %}
-      {% if not hide_calendar_nav %}
-        <a href="{{ url_for('calendar') }}">Calendar</a>
-      {% endif %}
-      <a href="{{ url_for('bookings') }}">Dashboard</a>
-      {% if session.get('user') == admin_username %}
-        <a href="{{ url_for('audit') }}">Audit</a>-->
-      {% endif %}
-    </div>
-    {% endif %}
-  </header>
+  
 
   <main class="container-main">
     <div class="container">
