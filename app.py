@@ -11,7 +11,7 @@ from io import BytesIO
 
 
 # ---------------- Config ----------------
-ADMIN_USERNAME = 'admin1'   # change if you want a different admin username
+ADMIN_USERNAME = 'Shahul'   # change if you want a different admin username
 SECRET_KEY = 'replace-with-a-secure-random-key'
 
 app = Flask(__name__)
