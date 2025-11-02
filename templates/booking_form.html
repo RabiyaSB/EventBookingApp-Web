@@ -87,16 +87,61 @@
   </div>
 
   <div class="d-grid mt-3">
+    <p id="duration" class="text-center text-primary fw-semibold" style="font-size: 1.1em;"></p>
     <button class="btn btn-primary">{{ 'Update Booking' if edit else 'Book Now' }}</button>
   </div>
 </form>
 
 <script>
-function calculateBalance() {
-  const total = parseFloat(document.getElementById('total_amount').value) || 0;
-  const advance = parseFloat(document.getElementById('advance').value) || 0;
-  const balance = total - advance;
-  document.getElementById('balance').value = balance.toFixed(2);
-}
+  function calculateBalance() {
+    const total = parseFloat(document.getElementById('total_amount').value) || 0;
+    const advance = parseFloat(document.getElementById('advance').value) || 0;
+    document.getElementById('balance').value = (total - advance).toFixed(2);
+  }
+
+  function to24Hour(timeStr) {
+    const [t, ampm] = timeStr.split(' ');
+    let [h, m] = t.split(':').map(Number);
+    if (ampm === 'PM' && h !== 12) h += 12;
+    if (ampm === 'AM' && h === 12) h = 0;
+    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:00`;
+  }
+
+  function calculateHours() {
+    const fromDate = document.querySelector('[name="from_date"]').value;
+    const toDate = document.querySelector('[name="to_date"]').value;
+    const fromTime = document.querySelector('[name="from_time"]').value;
+    const toTime = document.querySelector('[name="to_time"]').value;
+
+    if (fromDate && toDate && fromTime && toTime) {
+      const start = new Date(`${fromDate}T${to24Hour(fromTime)}`);
+      const end = new Date(`${toDate}T${to24Hour(toTime)}`);
+
+      if (end > start) {
+        const diffMs = end - start;
+        const totalMinutes = diffMs / 60000; // milliseconds → minutes
+        const totalHours = Math.floor(totalMinutes / 60);
+        const remainingMinutes = Math.round(totalMinutes % 60);
+
+        // Format as H.MM (e.g. 3.30 for 3 hours 30 min)
+        const formattedTime = `${totalHours}.${remainingMinutes.toString().padStart(2, '0')}`;
+
+        // Also show total days if it spans multiple days
+        const diffDays = Math.floor(totalHours / 24);
+        const hoursInDay = totalHours % 24;
+
+        document.getElementById('duration').innerText =
+          `${formattedTime} hours (${diffDays} days ${hoursInDay}.${remainingMinutes.toString().padStart(2, '0')} hrs)`;
+      } else {
+        document.getElementById('duration').innerText = '';
+      }
+    }
+  }
+
+  document.querySelectorAll(
+    '[name="from_date"], [name="to_date"], [name="from_time"], [name="to_time"]'
+  ).forEach(el => el.addEventListener('change', calculateHours));
 </script>
+
+
 {% endblock %}

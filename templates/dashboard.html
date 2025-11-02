@@ -33,6 +33,8 @@
             <a href="{{ url_for('edit_booking', booking_id=b.id) }}" class="btn btn-sm btn-warning ms-2">Edit</a>
             <a href="{{ url_for('delete_booking', booking_id=b.id) }}" class="btn btn-sm btn-danger ms-1"
               onclick="return confirm('Are you sure you want to delete this booking?')">Delete</a>
+            <a href="{{ url_for('download_receipt', booking_id=b.id) }}" class="btn btn-sm btn-outline-primary">Download PDF</a>
+
             </td>
 
            <td>{{ b.from_date.strftime('%Y-%m-%d') }}</td>

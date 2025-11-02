@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card p-4 shadow-sm">
+  <h3 class="mb-4 text-center">Admin Profile</h3>
+ 
+    <a href="{{ url_for('home') }}" class="btn btn-outline-light btn-sm">🏠 Home</a>
+
+
+  <!-- Change Admin Password -->
+  <form method="post" class="mb-4">
+    <h5>Change Admin Password</h5>
+    <input type="hidden" name="action" value="change_password">
+    <input type="password" class="form-control mb-2" name="new_password" placeholder="New Password" required>
+    <button class="btn btn-primary btn-sm">Update Password</button>
+  </form>
+
+  <!-- Create Staff -->
+  <form method="post" class="mb-4">
+    <h5>Create New Staff</h5>
+    <input type="hidden" name="action" value="create_staff">
+    <input type="text" class="form-control mb-2" name="staff_username" placeholder="Username" required>
+    <input type="password" class="form-control mb-2" name="staff_password" placeholder="Password" required>
+    <button class="btn btn-success btn-sm">Add Staff</button>
+  </form>
+
+  <!-- Delete Staff -->
+  <form method="post" class="mb-4">
+    <h5>Delete Staff</h5>
+    <input type="hidden" name="action" value="delete_staff">
+    <select name="staff_to_delete" class="form-select mb-2">
+      {% for u in users if u.username != 'admin1' %}
+        <option value="{{ u.username }}">{{ u.username }}</option>
+      {% endfor %}
+    </select>
+    <button class="btn btn-danger btn-sm">Delete Staff</button>
+  </form>
+</div>
+{% endblock %}

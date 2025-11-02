@@ -3,6 +3,9 @@
 {% block content %}
 <div class="text-center text-black">
   <p class="lead" style="opacity:0.9;">Welcome, {{ user }} — choose an action</p>
+   {% if session.get('user') == admin_username %}
+  <a class="btn btn-light btn-sm" href="{{ url_for('admin_profile') }}">ADMIN PROFILE</a>
+  {% endif %}
 </div>
 
 <div class="home-grid">

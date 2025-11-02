@@ -1,10 +1,13 @@
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash, make_response
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, time, timedelta, date
 import calendar as pycalendar
 from collections import defaultdict
 import random
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+from io import BytesIO
 
 
 # ---------------- Config ----------------
@@ -275,6 +278,50 @@ def delete_booking(booking_id):
     return redirect(url_for('bookings'))
 
 
+@app.route('/booking/<int:booking_id>/receipt')
+def download_receipt(booking_id):
+    b = Booking.query.get_or_404(booking_id)
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer, pagesize=A4)
+    width, height = A4
+
+    # Header
+    p.setFont("Helvetica-Bold", 18)
+    p.drawCentredString(width / 2, height - 60, "K.A.V AUDITORIUM")
+    p.setFont("Helvetica", 10)
+    p.drawCentredString(width / 2, height - 80, "Palakkad")
+
+    # Booking Info
+    p.setFont("Helvetica-Bold", 12)
+    p.drawString(80, height - 120, "Booking Receipt")
+    p.setFont("Helvetica", 10)
+    lines = [
+        f"Name: {b.name}",
+        f"Phone: {b.phone}",
+        f"Email: {b.email}",
+        f"From: {b.from_date} {b.from_time}",
+        f"To: {b.to_date} {b.to_time}",
+        f"Total Amount: ₹{b.total_amount}",
+        f"Advance: ₹{b.advance}",
+        f"Balance: ₹{b.balance}",
+        f"Details: {b.details or '-'}",
+        f"Created At: {b.created_at.strftime('%d-%m-%Y %I:%M %p')}"
+    ]
+    y = height - 150
+    for line in lines:
+        p.drawString(80, y, line)
+        y -= 20
+
+    p.showPage()
+    p.save()
+    buffer.seek(0)
+
+    response = make_response(buffer.getvalue())
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = f'attachment; filename=Booking_{b.id}.pdf'
+    return response
+
+
 @app.route('/bookings')
 def bookings():
     if not session.get('user'):
@@ -372,6 +419,52 @@ def audit():
     logs = AuditLog.query.order_by(AuditLog.timestamp.desc()).limit(500).all()
     return render_template('audit_logs.html', logs=logs, hide_audit_nav=True, user=session.get('user'),
         admin_username=ADMIN_USERNAME)
+
+@app.route('/admin/profile', methods=['GET', 'POST'])
+def admin_profile():
+    if not session.get('user') == ADMIN_USERNAME:
+        flash("Access denied.", "danger")
+        return redirect(url_for('home'))
+
+    users = User.query.all()
+
+    if request.method == 'POST':
+        action = request.form.get('action')
+
+        # Change admin password
+        if action == 'change_password':
+            new_pw = request.form['new_password']
+            admin = User.query.filter_by(username=ADMIN_USERNAME).first()
+            admin.pw_hash = generate_password_hash(new_pw)
+            db.session.commit()
+            flash("✅ Admin password updated.", "success")
+
+        # Create staff
+        elif action == 'create_staff':
+            uname = request.form['staff_username']
+            pw = request.form['staff_password']
+            if User.query.filter_by(username=uname).first():
+                flash("⚠️ Username already exists.", "danger")
+            else:
+                db.session.add(User(username=uname, pw_hash=generate_password_hash(pw)))
+                db.session.commit()
+                flash(f"✅ Staff '{uname}' created.", "success")
+
+        # Delete staff
+        elif action == 'delete_staff':
+            uname = request.form['staff_to_delete']
+            u = User.query.filter_by(username=uname).first()
+            if u and uname != ADMIN_USERNAME:
+                db.session.delete(u)
+                db.session.commit()
+                flash(f"🗑️ Staff '{uname}' deleted.", "info")
+            else:
+                flash("⚠️ Cannot delete admin or invalid user.", "danger")
+
+        return redirect(url_for('admin_profile'))
+
+    return render_template('admin_profile.html', users=users)
+
 
 # Simple API: bookings for a date
 @app.route('/api/bookings/date/<datestr>')
