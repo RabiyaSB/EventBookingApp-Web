@@ -16,7 +16,7 @@ SECRET_KEY = 'replace-with-a-secure-random-key'
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = SECRET_KEY
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///models.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../instance/models.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -65,10 +65,7 @@ def init_db():
         'staff3': 'staff123'
     }
 
-   # for uname, pwd in default_staff.items():
-       # if not User.query.filter_by(username=uname).first():
-            #db.session.add(User(username=uname, pw_hash=generate_password_hash(pwd)))
-
+ 
     db.session.commit()
 
 
@@ -94,13 +91,9 @@ def setup_once():
         app._db_initialized = True
 
 # ---------- Routes ----------
-@app.route('/')
-def index():
-    if session.get('user'):
-        return redirect(url_for('home'))
-    return redirect(url_for('login'))
 
-@app.route('/login', methods=['GET', 'POST'])
+
+@app.route('/login7621', methods=['GET', 'POST'])
 def login():
     # Login page uses a special background and hides nav/logout
     if request.method == 'POST':
@@ -132,12 +125,7 @@ def home():
 def booking_new():
     if not session.get('user'):
         return redirect(url_for('login'))
-    # allow prefilled date via ?date=YYYY-MM-DD
-    #pre_date = request.args.get('date')
-    #try:
-        #pre_date_iso = date.fromisoformat(pre_date).isoformat() if pre_date else date.today().isoformat()
-    #except Exception:
-        #pre_date_iso = date.today().isoformat()
+   
 
     slots = generate_time_slots(30)
     today_str = date.today().isoformat()
@@ -183,6 +171,11 @@ def booking_new():
         if overlapping:
             flash("⚠️ This booking overlaps with another booking!", "danger")
             return render_template('booking_form.html', time_slots=slots, today=today_str)
+        
+        email = request.form.get('email', '').strip()
+        if not email:
+            email = "not_provided@noemail.com"
+
 
 
         # ✅ Save booking
@@ -278,49 +271,142 @@ def delete_booking(booking_id):
     return redirect(url_for('bookings'))
 
 
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+
+
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from io import BytesIO
+from flask import make_response
+from datetime import datetime
+
+
 @app.route('/booking/<int:booking_id>/receipt')
 def download_receipt(booking_id):
     b = Booking.query.get_or_404(booking_id)
+
+    # ---------------- INVOICE DETAILS ----------------
+    invoice_no = f"INV-{b.id:05d}"
+    today_str = datetime.today().strftime("%d-%m-%Y")
+
+    # ---------------- PDF SETUP ----------------
     buffer = BytesIO()
     p = canvas.Canvas(buffer, pagesize=A4)
     width, height = A4
 
-    # Header
-    p.setFont("Helvetica-Bold", 18)
-    p.drawCentredString(width / 2, height - 60, "K.A.V AUDITORIUM")
-    p.setFont("Helvetica", 10)
-    p.drawCentredString(width / 2, height - 80, "Palakkad")
+    # ---------------- FONT SETUP ----------------
+    try:
+        pdfmetrics.registerFont(TTFont('Arimo', 'static/fonts/Arimo-Regular.ttf'))
+        pdfmetrics.registerFont(TTFont('Arimo-Bold', 'static/fonts/Arimo-Bold.ttf'))
+        FONT = "Arimo"
+        FONT_BOLD = "Arimo-Bold"
+    except:
+        FONT = "Helvetica"
+        FONT_BOLD = "Helvetica-Bold"
 
-    # Booking Info
-    p.setFont("Helvetica-Bold", 12)
-    p.drawString(80, height - 120, "Booking Receipt")
-    p.setFont("Helvetica", 10)
-    lines = [
-        f"Name: {b.name}",
-        f"Phone: {b.phone}",
-        f"Email: {b.email}",
-        f"From: {b.from_date} {b.from_time}",
-        f"To: {b.to_date} {b.to_time}",
-        f"Total Amount: ₹{b.total_amount}",
-        f"Advance: ₹{b.advance}",
-        f"Balance: ₹{b.balance}",
-        f"Details: {b.details or '-'}",
-        f"Created At: {b.created_at.strftime('%d-%m-%Y %I:%M %p')}"
-    ]
-    y = height - 150
-    for line in lines:
-        p.drawString(80, y, line)
-        y -= 20
+    # ============================================================
+    # RIGHT SIDE HEADER (unchanged)
+    # ============================================================
+    p.setFont(FONT_BOLD, 14)
+    p.drawRightString(width - 40, height - 60, "Receipt / Invoice")
 
+    p.setFont(FONT, 11)
+    p.drawRightString(width - 40, height - 85, f"Invoice No: {invoice_no}")
+    p.drawRightString(width - 40, height - 105, f"Date: {today_str}")
+
+    # ============================================================
+    # LEFT SIDE HEADER (MOVED DOWN BELOW DATE)
+    # ============================================================
+    p.setFont(FONT_BOLD, 20)
+    p.drawString(40, height - 130, "K.A.V Auditorium")
+
+    p.setFont(FONT, 11)
+    p.drawString(40, height - 150, "Near Telephone Exchange, Mundur -I, Kerala 678592")
+    p.drawString(40, height - 168, "Phone: (+91) 82811 42279, 95679 41222 | Email: Shahul.kav@gmail.com")
+
+    # Divider line below both headers
+    p.setLineWidth(1)
+    p.line(40, height - 190, width - 40, height - 190)
+
+    # ============================================================
+    # BILL TO SECTION (EXTRA SPACING ADDED)
+    # ============================================================
+    p.setFont(FONT_BOLD, 12)
+    p.drawString(40, height - 220, "Bill To :")
+
+    p.setFont(FONT, 12)
+    p.drawString(40, height - 240, b.name)
+    p.drawString(40, height - 260, f"Phone: {b.phone}")
+    p.drawString(40, height - 280, f"Email: {b.email}")
+
+    # ============================================================
+    # TABLE HEADER
+    # ============================================================
+    table_top = height - 320
+
+    p.line(40, table_top, width - 40, table_top)
+
+    p.setFont(FONT_BOLD, 12)
+    p.drawString(45, table_top - 20, "DESCRIPTION")
+    p.drawString(230, table_top - 20, "FROM")
+    p.drawString(360, table_top - 20, "TO")
+    p.drawString(480, table_top - 20, "AMOUNT")
+
+    p.line(40, table_top - 25, width - 40, table_top - 25)
+
+    # ============================================================
+    # TABLE ROW
+    # ============================================================
+    y = table_top - 50
+    p.setFont(FONT, 12)
+
+    p.drawString(45, y, "Auditorium Booking (Event)")
+
+    # NO OVERLAP – proper spacing
+    p.drawString(230, y, f"{b.from_date} {b.from_time}")
+    p.drawString(360, y, f"{b.to_date} {b.to_time}")
+
+    p.drawRightString(545, y, f"{b.total_amount:,.2f}")
+
+    # ============================================================
+    # TOTALS
+    # ============================================================
+    totals_y = y - 70
+
+    p.setFont(FONT_BOLD, 12)
+    p.drawRightString(545, totals_y, f"Total Amount: {b.total_amount:,.2f}")
+
+    p.setFont(FONT, 12)
+    p.drawRightString(545, totals_y - 25, f"Advance Paid: {b.advance:,.2f}")
+    p.drawRightString(545, totals_y - 50, f"Balance Due: {b.balance:,.2f}")
+
+    # ============================================================
+    # FOOTER / SIGNATURE
+    # ============================================================
+    footer_y = totals_y - 120
+
+    p.setFont(FONT, 12)
+    p.drawString(40, footer_y, "Authorized Signature: ___________________________")
+    p.drawString(40, footer_y - 25, "Date: ___________________________")
+
+    p.setFont(FONT, 11)
+    p.drawString(40, footer_y - 70, "Thank you for choosing K.A.V Auditorium.")
+
+    # ---------------- SAVE PDF ----------------
     p.showPage()
     p.save()
     buffer.seek(0)
 
     response = make_response(buffer.getvalue())
     response.headers['Content-Type'] = 'application/pdf'
-    response.headers['Content-Disposition'] = f'attachment; filename=Booking_{b.id}.pdf'
+    response.headers['Content-Disposition'] = f'attachment; filename=KAV_{invoice_no}.pdf'
     return response
-
 
 @app.route('/bookings')
 def bookings():
@@ -480,6 +566,54 @@ def api_bookings_by_date(datestr):
     return jsonify(out)
 
 
+# ---------------- PUBLIC PAGES ----------------
+
+@app.route('/')
+def public_home():
+    """Public homepage (main landing page)."""
+    return render_template('public_home.html')
+
+@app.route('/about')
+def about():
+    """Public info page about the auditorium."""
+    return render_template('about.html')
+
+@app.route('/enquiry', methods=['GET', 'POST'])
+def enquiry():
+    """Public enquiry form."""
+    if request.method == 'POST':
+        name = request.form['name']
+        phone = request.form['phone']
+        message = request.form.get('message', '')
+        preferred_date = request.form.get('preferred_date', '')
+        flash("✅ Thank you! We'll contact you soon.", "success")
+        return redirect(url_for('enquiry'))
+    return render_template('enquiry.html')
+
+@app.route("/public_calendar")
+def public_calendar():
+    bookings = Booking.query.all()
+    events = []
+
+    for b in bookings:
+        duration = datetime.strptime(b.to_time, "%I:%M %p") - datetime.strptime(b.from_time, "%I:%M %p")
+        hours = duration.seconds / 3600
+
+        # Determine color by hours booked
+        if hours >= 8:
+            color = "#ef4444"  # full day (red)
+        elif hours > 0:
+            color = "#d4af37"  # partial (gold)
+        else:
+            color = "#22c55e"  # free (green)
+
+        events.append({
+            "start": str(b.from_date),
+            "end": str(b.to_date),
+            "color": color
+        })
+
+    return render_template("public_calendar.html", events=events)
 
 
 if __name__ == '__main__':

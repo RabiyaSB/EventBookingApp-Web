@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KAV Auditorium</title>
+
+  <!-- Bootstrap + AOS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: url('{{ url_for("static", filename="img/new.jpg") }}') center no-repeat;
+      background-image:transparent 50%;
+      background-color: #42413fac;
+      color: #ffffff;
+      overflow-x: hidden;
+      object-fit:fill;
+    } 
+
+    :root { scroll-padding-top: 90px; }
+
+    /* ===================== HEADER ===================== */
+    header {
+      background: #060606;
+      background: url('{{ url_for("static", filename="img/R4.jpg") }}') center center no-repeat;
+      box-shadow: 0 2px 12px rgb(67, 67, 64);
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      
+      height: 80px;          /* FIXED HEIGHT */
+      display: flex;
+      align-items: center;   /* vertically center everything 
+      border: 3px solid #d4af37;*/
+    }
+
+    .navbar-brand img {
+      height: 50px;          /* stays small for layout */
+      transform: scale(1.7); /* visually enlarge */
+      transform-origin: left;
+    }
+
+
+    .nav-link {
+      font-weight: 400;
+      margin: 0 12px;
+      text-shadow : fixed#b2ac89;
+      font-size: .9rem;
+      text-transform: uppercase;
+      transition: 0.3s;
+      position: relative;
+      color: #f8f7f7;
+      padding: 8px 12px;
+      border-radius: 4px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    
+    }
+
+    .nav-link:hover {
+      color: #46433b !important;
+      text-shadow: 0 0 10px rgba(255,215,0,0.9);
+      box-shadow: 0 0 12px rgba(245, 244, 244, 0.45);
+      background: rgb(192, 166, 18);
+    }
+
+    /* ===================== HERO SECTION ===================== */
+
+    .hero {
+      margin-top: 140px;
+      height: 70vh;
+      margin-left: 4%;
+      margin-right: 4%;
+      border-radius: 10px;
+
+      background: url('{{ url_for("static", filename="img/hall.jpg") }}') center center no-repeat;
+      background-size:cover;   /* show complete image */
+      background-color: black;    /* fill empty space */
+      
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      position: relative;
+      overflow: hidden;
+      padding: 0 50px;
+    }
+
+
+    /* .hero {
+      margin-top: 140px;
+      height: 70vh;
+      margin-left: 5%;
+      margin-right: 5%;
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0 50px;
+    }
+
+    VIDEO 
+    .hero-video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit:contain;   
+      background: black; 
+      z-index: 1;
+    }*/
+
+    /* DARK OVERLAY */
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(8, 8, 8, 0.55);
+      z-index: 2;
+    }
+
+    /* CONTENT */
+    .hero-content {
+      position: relative;
+      z-index: 3;
+      text-align: center;
+    }
+
+
+    
+    /* Dark overlay */
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+    }
+
+    /* OUTER GOLD FRAME */
+    /*
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      right: 15px;
+      bottom: 15px;
+      border: 3px solid #d4af37;
+      border-radius: 15px;
+      animation: goldGlow 3s infinite alternate ease-in-out;
+      z-index: 3;
+    }
+
+    .inner-gold {
+      position: absolute;
+      top: 80px;
+      left: 80px;
+      right: 80px;
+      bottom: 80px;
+      border: 2px solid rgba(255,215,0,0.6);
+      border-radius: 10px;
+      z-index: 3;
+      animation: goldInnerGlow 2.5s infinite alternate ease-in-out;
+    }
+*/
+    @keyframes goldGlow {
+      from { box-shadow: 0 0 8px rgba(255,215,0,0.4); }
+      to   { box-shadow: 0 0 25px rgba(255,215,0,0.9); }
+    }
+
+    @keyframes goldInnerGlow {
+      from { box-shadow: 0 0 6px rgba(255,215,0,0.4); }
+      to   { box-shadow: 0 0 20px rgba(255,215,0,0.9); }
+    }
+    .about-text {
+      line-height: 1.5;   /* increase line spacing */
+    }
+
+    .hero-content {
+      text-align: center;
+      position: relative;
+      z-index: 5;
+      color: #e5e226;
+      animation: fadeUp 1.4s ease-out;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-content h1 {
+      font-size: 4.2rem;
+      font-weight: 800;
+      color: #f2f0f0;
+      letter-spacing: 2px;
+    }
+
+    .hero-content h4 {
+      font-size: 2rem;
+      color: #cac6b0;
+
+    
+      
+    }
+    .hero-content h2 {
+      font-size: 4rem;
+      font-weight: 800;
+      font-style:unset;
+      color: #070707;
+      letter-spacing: 4px;
+    }
+    
+    .hero-content h3 {
+      font-size: 2rem;
+      color: #fffdfd;
+      margin-bottom: 20px;
+    }
+
+    .btn-gold {
+      background: linear-gradient(90deg, #962f56, #956060);
+      border: none;
+      color: #fff;
+      padding: 10px 32px;
+      font-weight: 600;
+      border-radius: 30px;
+      transition: 0.3s;
+      margin: 5px;
+      box-shadow: 0 4px 12px rgb(52, 50, 50);
+    }
+
+    .btn-gold:hover {
+      transform: scale(1.08);
+      box-shadow: 0 0 25px rgba(255,215,0,0.7);
+    }
+
+    /* ===================== SECTIONS ===================== */
+    section { padding: 5rem 0; }
+
+    .section-title {
+      text-align: center;
+      font-size: 2.5rem;
+      font-weight: 600;
+      color: #060606;
+      margin-bottom: 3rem;
+      text-transform: uppercase;
+      
+    }
+
+    .feature-card {
+      background: #fefbf3;
+      border: 1px solid #f9f8f6;
+      border-radius: 12px;
+      padding: 20px;
+      transition: 0.3s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      background-color: #070707e9;
+      background: linear-gradient(135deg, #5c5d5d, #050505);
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(61, 61, 59, 0.3);
+    }
+
+    /* Force equal height images */
+    .feature-img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    /* ===================== MAP ===================== */
+    #map iframe {
+      width: 100%;
+      height: 350px;
+      border-radius: 12px;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.2);
+    }
+
+    /* ===================== FOOTER ===================== */
+    footer {
+      background: #1a1a1a;
+      color: #f5e8b3;
+      text-align: center;
+      padding: 2.5rem 0;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <nav class="navbar navbar-expand-lg navbar-light container py-3">
+      <a class="navbar-brand" href="#home">
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="KAV Auditorium Logo">
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="#features">Facilities</a></li>
+          <li class="nav-item"><a class="nav-link" href="#enquiry">Enquiry</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('public_calendar') }}">Calendar</a></li>
+          <li class="nav-item"><a class="nav-link" href="#map">Map</a></li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero" id="home">
+    
+    <div class="inner-gold"></div>
+    <div class="hero-content">
+      <H4>Celebrate Your Special Moments at</H4>
+      <h1>KAV AUDITORIUM</h1>
+      <a href="#enquiry" class="btn btn-gold">GET MORE DETAILS</a>
+      <a href="{{ url_for('public_calendar') }}" class="btn btn-gold">CHECK AVAILABILITY</a>
+    </div>
+    
+  </section>
+<!--
+  <section class="hero" id="home">
+
+    <video autoplay muted loop playsinline class="hero-video">
+      <source src="{{ url_for('static', filename='video/hero.mp4') }}" type="video/mp4">
+    </video>
+
+    <div class="hero-content">
+      <h3>Celebrate Your Special Moments at</h3>
+      <h1>KAV AUDITORIUM</h1>
+      <a href="#enquiry" class="btn btn-gold">GET MORE DETAILS</a>
+      <a href="{{ url_for('public_calendar') }}" class="btn btn-gold">CHECK AVAILABILITY</a>
+    </div>
+
+  </section> -->
+
+
+
+  <!-- ABOUT -->
+  <section id="about" data-aos="fade-up">
+    <div class="container text-left">
+      <h2 class="section-title">About US</h2>
+      <div class="feature-card">
+      
+      <p class="lead px-md-5">
+    
+           <h4>
+            <p class="about-text"> 
+            At KAV Auditorium, we take pride in offering a warm, traditional, and beautifully designed space in the heart of Palakkad.
+            
+             Whether it's a wedding, celebration, cultural program, or convention, our hall provides an elegant and comfortable setting for every occasion.
+
+              Located at a prime spot in Mundur, K.A.V Auditorium offers:
+              <ul class="about-text">
+             
+                <li>Seating capacity: 550</li>
+                <li>Floating capacity: 1000</li>
+                <li>Dining Hall: Located on the same floor for maximum convenience</li>
+                <li>Ample car parking</li>
+                <li>Water purifier facility</li>
+                <li>Generator backup to ensure your event continues smoothly, even during power cuts</li>
+              
+              </ul>
+                We offer a range of customizable packages to suit your needs.
+                Please contact us for more information.
+              </h4>
+              </p></p>
+              </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features" data-aos="fade-up">
+    <div class="container">
+      <h2 class="section-title">Venue Features</h2>
+
+      <div class="row g-4">
+
+        <div class="col-md-4">
+          <div class="feature-card">
+            <img src="{{ url_for('static', filename='img/G1.webp') }}" class="feature-img">
+            <h5><br>Hall</h5>
+            <p>500+ guest capacity.</p>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="feature-card">
+            <img src="{{ url_for('static', filename='img/G2.webp') }}" class="feature-img">
+            <h5><br>Banquet Dining</h5>
+            <p>Elegant dining space.</p>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="feature-card">
+            <img src="{{ url_for('static', filename='img/G3.webp') }}" class="feature-img">
+            <h5><br>Parking</h5>
+            <p>Wide parking area.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ENQUIRY FORM -->
+  <section id="enquiry" data-aos="fade-up">
+    <div class="container">
+      
+      
+      <h2 class="section-title">Enquiry & Call Back</h2>
+      <div class="feature-card">
+
+      <form class="mx-auto" style="max-width:600px;">
+        <div class="mb-3"><input class="form-control" type="text" placeholder="Full Name" required></div>
+        <div class="mb-3"><input class="form-control" type="email" placeholder="Email Address" required></div>
+        <div class="mb-3"><input class="form-control" type="tel" placeholder="Phone Number" required></div>
+        <div class="mb-3"><textarea class="form-control" rows="4" placeholder="Message / Details"></textarea></div>
+        <button class="btn btn-gold w-100 py-2">Submit Enquiry</button>
+      </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAP -->
+  <section id="map" data-aos="fade-up">
+    <div class="container">
+      <h2 class="section-title">Find Us</h2>
+       <iframe 
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3929.8867435655864!2d76.64793277499695!3d10.937698689222941!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ba86de27116c8c1%3A0xf8a7fdfd38a829af!2sRHPH%2BVMG%2C%20Mundur-I%2C%20Kerala%20678592!5e0!3m2!1sen!2sin!4v1707040000000"
+          width="100%"
+          height="350"
+          style="border:0; border-radius:12px;"
+          allowfullscreen=""
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+
+
+    </div>
+  </section>
+
+  <footer>
+    © 2025 KAV Auditorium | Palakkad | All Rights Reserved
+  </footer>
+
+  <!-- JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init({
+      duration: 900,
+      once: true
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,89 @@
+{% extends "base_public.html" %}
+{% block content %}
+<section class="container py-5">
+  <h2 class="text-center mb-4" style="color:#b68e20; font-weight:600;">Event Availability</h2>
+  <div id="calendar"></div>
+</section>
+
+<!-- FullCalendar -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const calendarEl = document.getElementById('calendar');
+  const events = JSON.parse('{{ events|tojson|safe }}');
+
+  const calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    height: "auto",
+    headerToolbar: {
+      left: '',
+      center: 'title',
+      right: ''  // hides other view buttons
+    },
+    titleFormat: { year: 'numeric', month: 'long' },
+    events: events,
+    eventDisplay: 'background'
+  });
+
+  calendar.render();
+});
+</script>
+
+<style>
+  /* Container look */
+  #calendar {
+    background-color: #fff;
+    border-radius: 15px;
+    padding: 25px;
+    border: 1px solid #f3e5ab;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+  }
+
+  /* Toolbar title */
+  .fc-toolbar-title {
+    color: #b68e20 !important;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  /* Grid border colors */
+  .fc-scrollgrid, .fc-col-header, .fc-daygrid {
+    border-color: #f8f1cf !important;
+  }
+
+  .fc-daygrid-day {
+    border-color: #f8f1cf !important;
+  }
+
+  /* Day number styling */
+  .fc-daygrid-day-number {
+    color: #2f2f2f !important;
+    font-weight: 500;
+  }
+
+  /* Today highlight */
+  .fc-day-today {
+    background-color: rgba(212,175,55,0.15) !important;
+    border: 1px solid #d4af37 !important;
+  }
+
+  /* Hover effect */
+  .fc-day:hover {
+    background-color: rgba(255,215,0,0.08);
+    transition: 0.2s ease;
+  }
+
+  /* Month header background */
+  .fc-col-header-cell {
+    background-color: #fff9e6 !important;
+  }
+
+  /* Event colors for background fill */
+  .fc-event {
+    opacity: 0.6 !important;
+    border: none !important;
+  }
+</style>
+{% endblock %}
